@@ -2,6 +2,18 @@
 
 configfile: "config.json"
 
+# One rule... to rule them all... 
+rule all:
+    input:
+        '{out}/results/caNFATC1_include_viral_vs_no_include_viral.png'.format(config['human_caNFATC1_prefixes'])
+        expand(
+            '{out}/{viral}/analysis/{{prefix}}.upset.png'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['human_caNFATC1_prefixes']
+        )
+
 #######################################################################################
 #   Prepare human references
 #######################################################################################
@@ -173,6 +185,66 @@ rule quantify_human_no_viral:
             shell('echo "{}"'.format(c))
             shell(c)
 
+
+#######################################################################################
+#   Analyze results
+######################################################################################
+rule analyze_multi_mapped_reads_caNFATC1:
+    input:
+        expand(
+            '{out}/{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['human_caNFATC1_prefixes']
+        )
+    output:
+        expand(
+            '{out}/{viral}/analysis/{{prefix}}.upset.png'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['human_caNFATC1_prefixes']
+        )
+    run:
+        commands = [
+            'mkdir -p {out}/{viral}/analysis'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            )
+        ]
+        commands += [
+            'python analyze_alignments.py human_NFATC1,human_NFATC2 {viral} {out}/{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/{viral}/analysis/{prefix}'.format(
+                out=config['output'],
+                viral='caNFATC1',
+                prefix=prefix
+            )
+            for prefix in config['human_caNFATC1_prefixes']
+        ]
+        for c in commands:
+            shell('echo "{}"'.format(c))
+            shell(c)
+
+rule compare_expression_include_exclude_viral:
+    input:
+        expand(
+            '{out}/{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='no_viral'
+            ),
+            prefix= config['human_caNFATC1_prefixes'] + config['human_caNFATC2_prefixes'] + config['human_GFP_prefixes']
+        ),
+        expand(
+            '{out}/{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['human_caNFATC1_prefixes']
+        )
+    output:
+        '{out}/results/caNFATC1_include_viral_vs_no_include_viral.png'.format(config['output'])
+    run:
+        shell('python plot_endo_expression.py') # TODO add command line arguments
 
 #######################################################################################
 #   Prepare mouse references
