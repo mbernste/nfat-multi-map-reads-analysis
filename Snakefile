@@ -180,18 +180,18 @@ rule quantify_human_no_viral:
 
 rule prepare_reference_mouse_caNFATC1:
     output:
-        '{out}/{viral}/rsem_reference/ref.transcripts.fa'.format(
+        '{out}/mouse_{viral}/rsem_reference/ref.transcripts.fa'.format(
             out=config['output'],
             endo='mouse_NFATC1',
             viral='caNFATC1'
         )
     run:
         commands = [
-            'mkdir -p {out}/{viral}/rsem_reference/ref'.format(
+            'mkdir -p {out}/mouse_{viral}/rsem_reference/ref'.format(
                 out=config['output'],
                 viral='caNFATC1'
             ),
-            'rsem-prepare-reference --bowtie {ref},{tran}/{viral}/{viral}.fa {out}/{viral}/rsem_reference/ref'.format(
+            'rsem-prepare-reference --bowtie {ref},{tran}/{viral}/{viral}.fa {out}/mouse_{viral}/rsem_reference/ref'.format(
                 ref=config['mouse_transcriptome'],
                 tran=config['transcript_files'],
                 viral='caNFATC1',
@@ -202,4 +202,36 @@ rule prepare_reference_mouse_caNFATC1:
             shell('echo "{}"'.format(c))
             shell(c)
 
+######################################################################################
+#   Quantify mouse samples
+######################################################################################
+rule quantify_mouse_caNFATC1:
+    input:
+        '{out}/mouse_{viral}/rsem_reference/ref.transcripts.fa'.format(
+            out=config['output'],
+            endo='mouse_NFATC1',
+            viral='caNFATC1'
+        )
+    output:
+        expand(
+            '{out}/mouse_{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['mouse_caNFATC1_prefixes']
+        )
+    run:
+        commands=['mkdir -p {}/mouse_caNFATC1/quantification'.format(config['output'])]
+        commands+=[
+            'nohup rsem-calculate-expression {data}/{prefix}.fastq  {out}/mouse_{viral}/rsem_reference/ref {out}/mouse_{viral}/quantification/{prefix} &'.format(
+                viral='caNFATC1',
+                data=config['mouse_raw_data'],
+                out=config['output'],
+                prefix=prefix
+            )
+            for prefix in config['mouse_caNFATC1_prefixes']
+        ]
+        for c in commands:
+            shell('echo "{}"'.format(c))
+            shell(c)
 
