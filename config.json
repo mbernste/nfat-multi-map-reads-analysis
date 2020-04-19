@@ -1,0 +1,70 @@
+{
+    "human_transcriptome": "/z/Comp/kendziorskigroup/DATA/REF/HG19/Hg19/NM_refGene_04092012.filtered.transcripts.fa",
+    "mouse_transcriptome": "/z/Comp/kendziorskigroup/DATA/REF/MM10/1.2.3/NM_only_GRCm38.protein_coding.transcripts.fa",
+    "transcript_files": "/ua/mnbernstein/projects/attie_collab/nfat_alignment/transcripts_data",
+    "human_raw_data": "/z/Comp/kendziorskigroup/DATA/ATTIE/JULY2016/RAWDATA",
+    "mouse_raw_data": "/z/Comp/kendziorskigroup/DATA/ATTIE/FEB2014/READS",
+    "human_caNFATC1_prefixes": [
+        "H1-C1_CGATGT_L001_R1_001",
+        "H2-C1_ACAGTG_L001_R1_001",
+        "H3-C1_ACTTGA_L003_R1_001",
+        "H4-C1_GGCTAC_L004_R1_001",
+        "H5-C1_AGTTCC_L004_R1_001",
+        "H6-C1_GTCCGC_L002_R1_001",
+        "H7-C1_GTTTCG_L003_R1_001",
+        "H8-C1_ACTGAT_L002_R1_001"
+    ],
+    "human_caNFATC2_prefixes": [
+        "H1-C2_TTAGGC_L001_R1_001",
+        "H2-C2_GCCAAT_L002_R1_001",
+        "H3-C2_GATCAG_L003_R1_001",
+        "H4-C2_CTTGTA_L004_R1_001",
+        "H5-C2_ATGTCA_L003_R1_001",
+        "H6-C2_GTGAAA_L002_R1_001",
+        "H7-C2_CGTACG_L004_R1_001",
+        "H8-C2_ATTCCT_L004_R1_001"
+    ],
+    "human_GFP_prefixes": [
+        "H1-GFP_ATCACG_L003_R1_001",
+        "H2-GFP_TGACCA_L001_R1_001",
+        "H3-GFP_CAGATC_L002_R1_001",
+        "H4-GFP_TAGCTT_L003_R1_001",
+        "H5-GFP_AGTCAA_L002_R1_001",
+        "H6-GFP_CCGTCC_L001_R1_001",
+        "H7-GFP_GTGGCC_L001_R1_001",
+        "H8-GFP_GAGTGG_L004_R1_001"
+    ],
+    "transcript_metadata": {
+        "human_NFATC1": [
+            "NM_006162.1",
+            "NM_172387.1",
+            "NM_172388.1",
+            "NM_172389.1",
+            "NM_172390.1"
+        ],
+        "human_NFATC2": [
+            "NM_001136021.1",
+            "NM_012340.1",
+            "NM_173091.1"
+        ],
+        "mouse_NFATC1": [
+            "ENSMUST00000035800",
+            "ENSMUST00000078049",
+            "ENSMUST00000167977",
+            "ENSMUST00000170905"
+        ],
+        "mouse_NFATC2": [
+            "ENSMUST00000029057",
+            "ENSMUST00000074618",
+            "ENSMUST00000109184",
+            "ENSMUST00000171689"
+        ],
+        "caNFATC1": [
+            "caNFATC1"
+        ],
+        "caNFATC2_v1":[
+            "caNFATC2_v1"
+        ]
+    },
+    "output": "/scratch/mnbernstein/attie_collab/hg19_alignment"
+}
