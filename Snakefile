@@ -292,6 +292,27 @@ rule compare_expression_include_exclude_viral:
                 viral='caNFATC2_v1'
             ),
             prefix=config['human_caNFATC2_prefixes']
+        ),
+        expand(
+            '{out}/mouse_{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['mouse_caNFATC1_prefixes']
+        ),
+        expand(
+            '{out}/mouse_{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC2_v1'
+            ),
+            prefix=config['mouse_caNFATC2_prefixes']
+        ),
+        expand(
+            '{out}/mouse_{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='no_viral'
+            ),
+            prefix=config['mouse_caNFATC1_prefixes'] + config['mouse_caNFATC2_prefixes'] + config['mouse_GFP_prefixes']
         )
     output:
         '{}/results/include_viral_vs_no_include_viral.png'.format(config['output'])
