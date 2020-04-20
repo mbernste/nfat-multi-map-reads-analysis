@@ -15,32 +15,114 @@ def main():
     with open('config.json', 'r') as f:
         config = json.load(f)
 
-    ENDO_GENES = [
+    human_endo_genes = [
         'human_NFATC1',
         'human_NFATC2'
     ]
-    viral_quants = '/scratch/mnbernstein/attie_collab/hg19_alignment/caNFATC1/quantification' #args[1]
-    no_viral_quants = '/scratch/mnbernstein/attie_collab/hg19_alignment/no_viral/quantification' #args[2]
-    viral_gene = 'caNFATC1'
+    mouse_endo_genes = [
+        'mouse_NFATC1',
+        'mouse_NFATC2'
+    ]
+    human_canfatc1_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/caNFATC1/quantification' #args[1]
+    human_canfatc2_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/caNFATC2_v1/quantification'
+    human_no_viral_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/no_viral/quantification' #args[2]
+    mouse_canfatc1_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/mouse_caNFATC1/quantification' #args[1]
+    mouse_canfatc2_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/mouse_caNFATC2_v1/quantification'
+    mouse_no_viral_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/mouse_no_viral/quantification' #args[2]
     out_dir = '.'
 
+    human_canfatc1_df = _gather_results(
+        human_endo_genes, 
+        'caNFATC1', 
+        human_canfatc1_dir, 
+        human_no_viral_dir,
+        config['human_caNFATC1_prefixes'],
+        config['transcript_metadata']
+    )
+    human_canfatc2_df = _gather_results(
+        human_endo_genes, 
+        'caNFATC2_v1', 
+        human_canfatc2_dir, 
+        human_no_viral_dir,
+        config['human_caNFATC2_prefixes'],
+        config['transcript_metadata']
+    )
+    mouse_canfatc1_df = _gather_results(
+        mouse_endo_genes,
+        'caNFATC1',
+        mouse_canfatc1_dir,
+        mouse_no_viral_dir,
+        config['mouse_caNFATC1_prefixes'],
+        config['transcript_metadata']
+    )
+
+    fig, axarr = plt.subplots(2,2,figsize=(9,8))
+    sns.set(style="whitegrid", palette="pastel")
+    sns.set_style("whitegrid")
+    sns.boxplot(
+        x="Gene", 
+        y="TPM", 
+        hue="Reference", 
+        palette=["m", "g"],
+        ax=axarr[0][0],
+        data=human_canfatc1_df
+    )
+    axarr[0][0].get_legend().remove()
+    axarr[0][0].set_yscale('log')
+    axarr[0][0].set_title('Human caNFATC1-treated')
+
+    sns.boxplot(
+        x="Gene",
+        y="TPM",
+        hue="Reference",
+        palette=["m", "g"],
+        ax=axarr[0][1],
+        data=human_canfatc2_df
+    )
+    axarr[0][1].set_yscale('log')
+    axarr[0][1].set_title('Human caNFATC2-treated')
+    axarr[0][1].legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+    sns.boxplot(
+        x="Gene",
+        y="TPM",
+        hue="Reference",
+        palette=["m", "g"],
+        ax=axarr[1][0],
+        data=mouse_canfatc1_df
+    )
+    axarr[1][0].set_yscale('log')
+    axarr[1][0].set_title('Mouse caNFATC1-treated')
+    axarr[1][0].get_legend().remove()
+
+    #axarr[0][0].grid(b=True, which='minor', axis='y')
+
+    plt.tight_layout()
+    fig.savefig(
+        join(out_dir, 'include_viral_vs_no_include_viral.png'),
+        format='png',
+        dpi=150
+    )
+
+
+def _gather_results(endo_genes, viral_gene, viral_dir, no_viral_dir, prefixes, gene_to_transcripts):
     da = []
-    for prefix in config['human_caNFATC1_prefixes']:
+    for prefix in prefixes:
         print('Reading expression data for sample ', prefix)
-        for gene in ENDO_GENES:
+        for gene in endo_genes:
             viral_expr = _retrieve_expression(
-                join(viral_quants, '{}.isoforms.results'.format(prefix)),
-                config['transcript_metadata'][gene]
+                join(viral_dir, '{}.isoforms.results'.format(prefix)),
+                gene_to_transcripts[gene]
             )
             no_viral_expr = _retrieve_expression(
-                join(no_viral_quants, '{}.isoforms.results'.format(prefix)),
-                config['transcript_metadata'][gene]
+                join(no_viral_dir, '{}.isoforms.results'.format(prefix)),
+                gene_to_transcripts[gene]
             )
             da.append((
-                prefix, 'Include {}'.format(viral_gene), gene, viral_expr  
+                prefix, 'Include viral', gene.split('_')[1], viral_expr
             ))
             da.append((
-                prefix, 'Exclude {}'.format(viral_gene), gene, no_viral_expr  
+                prefix, 'Exclude viral', gene.split('_')[1], no_viral_expr
             ))
     df = pd.DataFrame(
         data=da,
@@ -52,27 +134,7 @@ def main():
         ]
     )
     print(df)
-
-    fig, ax = plt.subplots(1,1,figsize=(6,4))
-    sns.set(style="ticks", palette="pastel")
-    sns.boxplot(
-        x="Gene", 
-        y="TPM", 
-        hue="Reference", 
-        palette=["m", "g"],
-        data=df
-    )
-    fig.get_axes()[0].set_yscale('log')
-    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    ax.set_title('Expression for {}-treated samples'.format(viral_gene))
-    plt.tight_layout()
-    fig.savefig(
-        join(out_dir, 'caNFATC1_include_viral_vs_no_include_viral.png'),
-        format='png',
-        dpi=150
-    )
-
-
+    return df
 
 
 def _retrieve_expression(fname, isoforms):
