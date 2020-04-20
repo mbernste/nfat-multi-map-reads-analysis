@@ -10,11 +10,14 @@ import sys
 import json
 from os.path import join
 import pandas as pd
+import sys
 
 def main():
+    data_dir = sys.argv[1]
+    out_f = sys.argv[2]
+
     with open('config.json', 'r') as f:
         config = json.load(f)
-
     human_endo_genes = [
         'human_NFATC1',
         'human_NFATC2'
@@ -23,13 +26,12 @@ def main():
         'mouse_NFATC1',
         'mouse_NFATC2'
     ]
-    human_canfatc1_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/caNFATC1/quantification' #args[1]
-    human_canfatc2_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/caNFATC2_v1/quantification'
-    human_no_viral_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/no_viral/quantification' #args[2]
-    mouse_canfatc1_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/mouse_caNFATC1/quantification' #args[1]
-    mouse_canfatc2_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/mouse_caNFATC2_v1/quantification'
-    mouse_no_viral_dir = '/scratch/mnbernstein/attie_collab/hg19_alignment/mouse_no_viral/quantification' #args[2]
-    out_dir = '.'
+    human_canfatc1_dir = join(data_dir, 'caNFATC1/quantification')
+    human_canfatc2_dir = join(data_dir, 'caNFATC2_v1/quantification')
+    human_no_viral_dir = join(data_dir, 'no_viral/quantification')
+    mouse_canfatc1_dir = join(data_dir, 'mouse_caNFATC1/quantification')
+    mouse_canfatc2_dir = join(data_dir, 'mouse_caNFATC2_v1/quantification')
+    mouse_no_viral_dir = join(data_dir, 'mouse_no_viral/quantification')
 
     human_canfatc1_df = _gather_results(
         human_endo_genes, 
@@ -53,6 +55,14 @@ def main():
         mouse_canfatc1_dir,
         mouse_no_viral_dir,
         config['mouse_caNFATC1_prefixes'],
+        config['transcript_metadata']
+    )
+    mouse_canfatc2_df = _gather_results(
+        mouse_endo_genes,
+        'caNFATC2_v1',
+        mouse_canfatc2_dir,
+        mouse_no_viral_dir,
+        config['mouse_caNFATC2_prefixes'],
         config['transcript_metadata']
     )
 
@@ -95,11 +105,21 @@ def main():
     axarr[1][0].set_title('Mouse caNFATC1-treated')
     axarr[1][0].get_legend().remove()
 
-    #axarr[0][0].grid(b=True, which='minor', axis='y')
+    sns.boxplot(
+        x="Gene",
+        y="TPM",
+        hue="Reference",
+        palette=["m", "g"],
+        ax=axarr[1][1],
+        data=mouse_canfatc2_df
+    )
+    axarr[1][1].set_yscale('log')
+    axarr[1][1].set_title('Mouse caNFATC2-treated')
+    axarr[1][1].get_legend().remove()
 
     plt.tight_layout()
     fig.savefig(
-        join(out_dir, 'include_viral_vs_no_include_viral.png'),
+        out_f,
         format='png',
         dpi=150
     )

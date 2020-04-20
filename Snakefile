@@ -19,6 +19,18 @@ rule all:
                 viral='caNFATC2_v1'
             ),
             prefix=config['human_caNFATC2_prefixes']
+        ),
+        expand(
+            '{out}/results/{{prefix}}.upset.png'.format(
+                out=config['output']
+            ),
+            prefix=config['mouse_caNFATC1_prefixes']
+        ),
+        expand(
+            '{out}/results/{{prefix}}.upset.png'.format(
+                out=config['output']
+            ),
+            prefix=config['mouse_caNFATC2_prefixes']
         )
 
 #######################################################################################
@@ -207,7 +219,7 @@ rule analyze_multi_mapped_reads_human_caNFATC1:
         )
     output:
         expand(
-            '{out}/{viral}/analysis/{{prefix}}.upset.png'.format(
+            '{out}/results/{{prefix}}.upset.png'.format(
                 out=config['output'],
                 viral='caNFATC1'
             ),
@@ -215,13 +227,13 @@ rule analyze_multi_mapped_reads_human_caNFATC1:
         )
     run:
         commands = [
-            'mkdir -p {out}/{viral}/analysis'.format(
+            'mkdir -p {out}/results'.format(
                 out=config['output'],
                 viral='caNFATC1'
             )
         ]
         commands += [
-            'python analyze_alignments.py human_NFATC1,human_NFATC2 {viral} {out}/{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/{viral}/analysis/{prefix}'.format(
+            'python analyze_alignments.py human_NFATC1,human_NFATC2 {viral} {out}/{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/results/{prefix}'.format(
                 out=config['output'],
                 viral='caNFATC1',
                 prefix=prefix
@@ -243,21 +255,21 @@ rule analyze_multi_mapped_reads_human_caNFATC2v1:
         )
     output:
         expand(
-            '{out}/{viral}/analysis/{{prefix}}.upset.png'.format(
-                out=config['output'],
-                viral='caNFATC2_v1'
+            '{out}/results/{{prefix}}.upset.png'.format(
+                out=config['output']
+                #viral='caNFATC2_v1'
             ),
             prefix=config['human_caNFATC2_prefixes']
         )
     run:
         commands = [
-            'mkdir -p {out}/{viral}/analysis'.format(
+            'mkdir -p {out}/results'.format(
                 out=config['output'],
                 viral='caNFATC2_v1'
             )
         ]
         commands += [
-            'python analyze_alignments.py human_NFATC1,human_NFATC2 {viral} {out}/{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/{viral}/analysis/{prefix}'.format(
+            'python analyze_alignments.py human_NFATC1,human_NFATC2 {viral} {out}/{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/results/{prefix}'.format(
                 out=config['output'],
                 viral='caNFATC2_v1',
                 prefix=prefix
@@ -268,6 +280,73 @@ rule analyze_multi_mapped_reads_human_caNFATC2v1:
             shell('echo "{}"'.format(c))
             shell(c)
 
+rule analyze_multi_mapped_reads_mouse_caNFATC1:
+    input:
+        expand(
+            '{out}/mouse_{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC1'
+            ),
+            prefix=config['mouse_caNFATC1_prefixes']
+        )
+    output:
+        expand(
+            '{out}/results/{{prefix}}.upset.png'.format(
+                out=config['output']
+            ),
+            prefix=config['mouse_caNFATC1_prefixes']
+        )
+    run:
+        commands = [
+            'mkdir -p {out}/results'.format(
+                out=config['output']
+            )
+        ]
+        commands += [
+            'python analyze_alignments.py mouse_NFATC1,mouse_NFATC2 {viral} {out}/mouse_{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/results/{prefix}'.format(
+                out=config['output'],
+                viral='caNFATC1',
+                prefix=prefix
+            )
+            for prefix in config['mouse_caNFATC1_prefixes']
+        ]
+        for c in commands:
+            shell('echo "{}"'.format(c))
+            shell(c)
+
+rule analyze_multi_mapped_reads_mouse_caNFATC2v1:
+    input:
+        expand(
+            '{out}/mouse_{viral}/quantification/{{prefix}}.isoforms.results'.format(
+                out=config['output'],
+                viral='caNFATC2_v1'
+            ),
+            prefix=config['mouse_caNFATC2_prefixes']
+        )
+    output:
+        expand(
+            '{out}/results/{{prefix}}.upset.png'.format(
+                out=config['output']
+            ),
+            prefix=config['mouse_caNFATC2_prefixes']
+        )
+    run:
+        commands = [
+            'mkdir -p {out}/results'.format(
+                out=config['output']
+            )
+        ]
+        commands += [
+            'python analyze_alignments.py mouse_NFATC1,mouse_NFATC2 {viral} {out}/mouse_{viral}/quantification/{prefix}.transcript.sorted.bam  {out}/results/{prefix}'.format(
+                out=config['output'],
+                viral='caNFATC2_v1',
+                prefix=prefix
+            )
+            for prefix in config['mouse_caNFATC2_prefixes']
+        ]
+        for c in commands:
+            shell('echo "{}"'.format(c))
+            shell(c)
 
 
 rule compare_expression_include_exclude_viral:
@@ -317,7 +396,9 @@ rule compare_expression_include_exclude_viral:
     output:
         '{}/results/include_viral_vs_no_include_viral.png'.format(config['output'])
     run:
-        shell('python plot_endo_expression.py') # TODO add command line arguments
+        shell('python plot_endo_expression.py {out} {out}/results/include_viral_vs_no_include_viral.png'.format(
+            out=config['output']
+        ))
 
 #######################################################################################
 #   Prepare mouse references
