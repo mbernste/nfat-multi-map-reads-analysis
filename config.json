@@ -34,6 +34,27 @@
         "H7-GFP_GTGGCC_L001_R1_001",
         "H8-GFP_GAGTGG_L004_R1_001"
     ],
+    "mouse_caNFATC1_prefixes": [
+        "run486.C1-120613_CAGATC_L002_R1",
+        "run486.C1-121113_CTTGTA_L001_R1",
+        "run486.C1-121213_ACTTGA_L003_R1",
+        "run486.C1-121813_GTGAAA_L001_R1",
+        "run486.C1-121913_TAGCTT_L003_R1"
+    ],
+    "mouse_caNFATC2_prefixes": [
+        "run486.C2-120613_GGCTAC_L003_R1",
+        "run486.C2-121113_AGTTCC_L003_R1",
+        "run486.C2-121213_GATCAG_L001_R1",
+        "run486.C2-121813_CCGTCC_L002_R1",
+        "run486.C2-121913_TTAGGC_L002_R1"
+    ],
+    "mouse_GFP_prefixes": [
+        "run486.GFP120613_ACAGTG_L001_R1",
+        "run486.GFP121113_CGATGT_L002_R1",
+        "run486.GFP121213_TGACCA_L002_R1",
+        "run486.GFP-121813_ATCACG_L003_R1",
+        "run486.GFP121913_GCCAAT_L001_R1"
+    ],
     "transcript_metadata": {
         "human_NFATC1": [
             "NM_006162.1",

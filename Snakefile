@@ -7,14 +7,14 @@ rule all:
     input:
         '{}/results/include_viral_vs_no_include_viral.png'.format(config['output']),
         expand(
-            '{out}/{viral}/analysis/{{prefix}}.upset.png'.format(
+            '{out}/results/{{prefix}}.upset.png'.format(
                 out=config['output'],
                 viral='caNFATC1'
             ),
             prefix=config['human_caNFATC1_prefixes']
         ),
         expand(
-            '{out}/{viral}/analysis/{{prefix}}.upset.png'.format(
+            '{out}/results/{{prefix}}.upset.png'.format(
                 out=config['output'],
                 viral='caNFATC2_v1'
             ),

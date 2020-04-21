@@ -8,7 +8,8 @@ This pipeline uses [Snakemake](https://academic.oup.com/bioinformatics/article/2
 - human_transcriptome: The path to the human transcriptome FASTA file  
 - mouse_transcriptome: The path to the mouse transcriptome FASTA file  
 - human_raw_data: The path to the human raw reads FASTQ files  
-- mouse_raw_data: The path to the mouse raw reads FASTQ files  
+- mouse_raw_data: The path to the mouse raw reads FASTQ files 
+- transcript_files: The path to the directory 'transcripts_data', included in this repository. This directory stores the viral transcript sequences. 
 - output: The path to where all output should be written
 
 To run the pipeline, run the following command from the project directory:  
